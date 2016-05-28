@@ -19,7 +19,7 @@ yum install java-1.8.0-openjdk.x86_64 -y ;
 ```
 
 **注意: sun jdk 由于美国进出口软件法律限制，需替换其加密相关jar [下载地址](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
-使用教程请自行 Google **
+使用教程请自行 Google**
 
 ### 第三步：安装代理软件
 
