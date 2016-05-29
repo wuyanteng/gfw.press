@@ -7,6 +7,13 @@ Windows 请访问 http://gfw.press/GFW.Press.msi 下载客户端安装包 配置
 
 Linux 使用项目根目录下的 gfw.press_fat.jar
 
+<img width="614" alt="server" src="https://cloud.githubusercontent.com/assets/13043245/15628329/f60b8a9a-2530-11e6-9d93-424f7ded2242.png">
+
+
+<img width="585" alt="client" src="https://cloud.githubusercontent.com/assets/13043245/15628331/fcd97332-2530-11e6-9984-31a60b1fa375.png">
+
+<img width="603" alt="help" src="https://cloud.githubusercontent.com/assets/13043245/15628337/2d647b50-2531-11e6-9682-07e8909e97c0.png">
+
 
 ## 二、服务器
 
