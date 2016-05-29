@@ -40,7 +40,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
+import org.apache.log4j.Logger;
+import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import org.json.simple.JSONObject;
 
 import press.gfw.utils.Config;
@@ -72,91 +75,91 @@ public class Windows extends JFrame {
 
 			switch (command) {
 
-				case "退出":
+			case "退出":
 
-					setVisible(false);
+				setVisible(false);
 
-					if (tray != null && icon != null) {
+				if (tray != null && icon != null) {
 
-						tray.remove(icon);
+					tray.remove(icon);
 
-					}
+				}
 
-					System.exit(0);
+				System.exit(0);
 
-					break;
+				break;
 
-				case "确定":
+			case "确定":
 
-					setVisible(false);
+				setVisible(false);
 
-					boolean edit = false;
+				boolean edit = false;
 
-					if (!serverHost.equals(serverHostField.getText().trim())) {
+				if (!serverHost.equals(serverHostField.getText().trim())) {
 
-						serverHost = serverHostField.getText().trim();
+					serverHost = serverHostField.getText().trim();
 
-						edit = true;
+					edit = true;
 
-					}
+				}
 
-					if (!serverPort.equals(serverPortField.getText().trim())) {
+				if (!serverPort.equals(serverPortField.getText().trim())) {
 
-						serverPort = serverPortField.getText().trim();
+					serverPort = serverPortField.getText().trim();
 
-						edit = true;
+					edit = true;
 
-					}
+				}
 
-					String _password = new String(passwordField.getPassword()).trim();
+				String _password = new String(passwordField.getPassword()).trim();
 
-					if (!password.equals(_password)) {
+				if (!password.equals(_password)) {
 
-						password = _password;
+					password = _password;
 
-						edit = true;
+					edit = true;
 
-					}
+				}
 
-					// if (!AES256CFB.isPassword(password)) {
+				// if (!AES256CFB.isPassword(password)) {
 
-					// passwordField.setBackground(Color.ORANGE);
+				// passwordField.setBackground(Color.ORANGE);
 
-					// passwordField.setToolTipText("密码需包含大小写字母和数字，至少八个字符。");
+				// passwordField.setToolTipText("密码需包含大小写字母和数字，至少八个字符。");
 
-					// }
+				// }
 
-					if (!proxyPort.equals(proxyPortField.getText().trim())) {
+				if (!proxyPort.equals(proxyPortField.getText().trim())) {
 
-						proxyPort = proxyPortField.getText().trim();
+					proxyPort = proxyPortField.getText().trim();
 
-						edit = true;
+					edit = true;
 
-					}
+				}
 
-					if (edit) {
+				if (edit) {
 
-						saveConfig();
+					saveConfig();
 
-					}
+				}
 
-					start();
+				start();
 
-					break;
+				break;
 
-				case "取消":
+			case "取消":
 
-					setVisible(false);
+				setVisible(false);
 
-					serverHostField.setText(serverHost);
+				serverHostField.setText(serverHost);
 
-					serverPortField.setText(serverPort);
+				serverPortField.setText(serverPort);
 
-					passwordField.setText(password);
+				passwordField.setText(password);
 
-					proxyPortField.setText(proxyPort);
+				proxyPortField.setText(proxyPort);
 
-					break;
+				break;
 
 			}
 
@@ -228,6 +231,14 @@ public class Windows extends JFrame {
 
 	public static void main(String[] args) throws IOException {
 
+		try {
+			BeautyEyeLNFHelper.frameBorderStyle = BeautyEyeLNFHelper.FrameBorderStyle.generalNoTranslucencyShadow;
+			UIManager.put("RootPane.setupButtonVisible", false);
+			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
+		} catch (Exception e) {
+			Logger.getLogger(Windows.class).error("BeautyEye初始化失败,异常信息: ", e);
+		}
+
 		Windows windows = new Windows();
 
 		windows.start();
@@ -252,7 +263,8 @@ public class Windows extends JFrame {
 
 	private String serverHost = "", serverPort = "", password = "", proxyPort = "";
 
-	private JTextField serverHostField = new JTextField(), serverPortField = new JTextField(), proxyPortField = new JTextField();
+	private JTextField serverHostField = new JTextField(), serverPortField = new JTextField(),
+			proxyPortField = new JTextField();
 
 	private JPasswordField passwordField = new JPasswordField();
 
@@ -475,7 +487,9 @@ public class Windows extends JFrame {
 
 		if (client != null && !client.isKill()) {
 
-			if (serverHost.equals(client.getServerHost()) && serverPort.equals(String.valueOf(client.getServerPort())) && password.equals(client.getPassword()) && proxyPort.equals(String.valueOf(client.getListenPort()))) {
+			if (serverHost.equals(client.getServerHost()) && serverPort.equals(String.valueOf(client.getServerPort()))
+					&& password.equals(client.getPassword())
+					&& proxyPort.equals(String.valueOf(client.getListenPort()))) {
 
 				return;
 
