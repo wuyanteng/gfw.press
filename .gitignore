@@ -4,3 +4,6 @@
 /user.txt
 /bin/
 /.fatjar
+/.DS_Store
+/.settings/
+/.gitignore
