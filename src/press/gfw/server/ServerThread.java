@@ -66,6 +66,7 @@ public class ServerThread extends PointThread {
 
 	}
 
+	
 
 	/**
 	 * 关闭所有连接，此线程及转发子线程调用
@@ -74,17 +75,18 @@ public class ServerThread extends PointThread {
 
 		try {
 
-			if (proxySocket!=null) {
-				proxySocket.close();
-			}
-
-			if (clientSocket!=null) {
-				clientSocket.close();
-			}
+			proxySocket.close();
 
 		} catch (Exception e) {
-			logger.error("关闭 资源 失败: ",e);
+			logger.error("ProxySocket 关闭失败: ",e);
+		}
 
+		try {
+
+			clientSocket.close();
+
+		} catch (Exception e) {
+			logger.error("ClientSocket 关闭失败: ",e);
 		}
 
 		if (forwarding) {
@@ -111,28 +113,23 @@ public class ServerThread extends PointThread {
 		try {
 
 			// 连接代理服务器
-			logger.info("连接代理服务器,Host: "+proxyHost+" PORT: "+proxyPort);
+			logger.debug("创建 ProxySocket...");
 			proxySocket = new Socket(proxyHost, proxyPort);
 
 			// 设置3分钟超时
-			logger.debug("设置超时3分钟...");
+			logger.debug("设置 ProxySocket ClientSocket 超时3分钟...");
 			proxySocket.setSoTimeout(180000);
 			clientSocket.setSoTimeout(180000);
 
 			// 打开 keep-alive
-			logger.debug("开启 keep-alive ...");
+			logger.debug("开启 KeepAlive...");
 			proxySocket.setKeepAlive(true);
 			clientSocket.setKeepAlive(true);
 
 			// 获取输入输出流
-			logger.debug("获取客户端 I/O 流...");
 			clientIn = clientSocket.getInputStream();
 			clientOut = clientSocket.getOutputStream();
 
-			logger.debug("发起心跳包测试...");
-			proxySocket.sendUrgentData(0xFF);
-			
-			logger.debug("获取代理服务器 I/O 流...");
 			proxyIn = proxySocket.getInputStream();
 			proxyOut = proxySocket.getOutputStream();
 
@@ -147,25 +144,16 @@ public class ServerThread extends PointThread {
 		}
 
 		// 开始转发
-		logger.debug("开始转发数据...");
 		forwarding = true;
 
-		if (clientSocket.isClosed()||clientSocket.isInputShutdown()||clientSocket.isOutputShutdown()) {
-			logger.error("ClientSocket I/O Shutdown!");
-			over();
-			return;
-		}
-		
-		if (proxySocket.isInputShutdown()||proxySocket.isOutputShutdown()) {
-			logger.error("ProxySocket I/O Shutdown!");
-			over();
-			return;
-		}
-		
+		logger.debug("解密转发线程创建...");
 		DecryptForwardThread forwardProxy = new DecryptForwardThread(this, clientIn, proxyOut, key);
+		logger.debug("解密转发 "+forwardProxy.getName()+" 线程启动...");
 		forwardProxy.start();
 
+		logger.debug("加密转发线程创建...");
 		EncryptForwardThread forwardClient = new EncryptForwardThread(this, proxyIn, clientOut, key);
+		logger.debug("加密转发 "+forwardClient.getName()+" 线程启动...");
 		forwardClient.start();
 
 	}

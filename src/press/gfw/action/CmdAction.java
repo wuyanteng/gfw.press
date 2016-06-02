@@ -1,9 +1,12 @@
 package press.gfw.action;
 
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 
 import press.gfw.client.CmdClient;
+import press.gfw.client.Windows;
 import press.gfw.server.Server;
 import press.gfw.utils.CommandUtils;
 
@@ -20,25 +23,38 @@ public class CmdAction {
 	
 	private static Logger logger = Logger.getLogger(CmdAction.class);
 	
-	public static void main(String[] args) {
+	public static void main(String[] args)  {
+		
+		if (args.length>1) {
+			logger.error("执行参数有误,可选命令如下\nserver: 启动服务端\nclient: 启动客户端\ngui: 启动 GUI 客户端\nonline: 统计在线人数");
+			return;
+		}
+		
 		if (args==null||args.length==0) {
-			logger.error("请输入执行命令,可选命令如下\nserver: 启动服务端\nclient: 启动客户端\nonline: 统计在线人数");
-			return;
-		}
-		
-		if (args.length!=1) {
-			logger.error("执行参数有误,可选命令如下\nserver: 启动服务端\nclient: 启动客户端\nonline: 统计在线人数");
-			return;
-		}
-		
-		switch (args[0]) {
-		
+			
+			logger.info("启动 GUI 客户端...");
+			try {
+				Windows.main(null);
+			} catch (IOException e1) {
+				logger.error("启动 GUI 客户端失败: ",e1);
+			}
+		}else{
+			switch (args[0]) {
+			
 			case "server":
 				Server.main(null);
 				break;
 				
 			case "client":
 				CmdClient.main(null);
+				break;
+				
+			case "gui":
+				try {
+					Windows.main(null);
+				} catch (IOException e1) {
+					logger.error("启动 GUI 客户端失败: ",e1);
+				}
 				break;
 				
 			case "online":
@@ -51,8 +67,12 @@ public class CmdAction {
 				break;
 			default:
 				logger.error("不支持该命令!");
+				logger.error("执行参数有误,可选命令如下\nserver: 启动服务端\nclient: 启动客户端\ngui: 启动 GUI 客户端\nonline: 统计在线人数");
 				break;
 		}
+		}
+		
+		
 		
 	}
 

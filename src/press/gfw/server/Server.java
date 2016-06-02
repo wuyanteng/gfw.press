@@ -28,7 +28,6 @@ import java.util.Hashtable;
 
 import javax.crypto.SecretKey;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
@@ -66,18 +65,26 @@ public class Server extends Thread {
 
 	private ServerSocket serverSocket = null;
 
+	public static void main(String[] args)  {
+
+		Server server = new Server();
+
+		server.service();
+
+	}
+	
+	
 	/**
 	 * 构造方法，主线程
 	 */
 	public Server() {
 
-		logger.debug("创建锁文件 server.lock");
 		lockFile = new File("server.lock");
 
-		logger.debug("初始化配置文件");
 		config = new Config();
 
-		logger.info("加载配置文件");
+		logger.debug("初始化加载配置文件: server.json");
+		
 		loadConfig(); // 获取配置参数
 
 	}
@@ -127,20 +134,6 @@ public class Server extends Thread {
 	}
 
 	/**
-	 * 主启动函数
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) {
-
-		Server server = new Server();
-
-		server.service();
-
-	}
-	
-	
-	/**
 	 * 暂停
 	 * 
 	 * @param m
@@ -148,11 +141,11 @@ public class Server extends Thread {
 	private void _sleep(long m) {
 
 		try {
-
+			logger.debug("线程开始休眠...");
 			sleep(m);
 
 		} catch (InterruptedException ie) {
-
+			logger.error("线程休眠出现错误: ",ie);
 		}
 
 	}
@@ -187,7 +180,7 @@ public class Server extends Thread {
 				serverSocket.close();
 
 			} catch (IOException ex) {
-
+				logger.error("ServerSocket 关闭失败: ",ex);
 			}
 
 			serverSocket = null;
@@ -205,32 +198,30 @@ public class Server extends Thread {
 
 		if (json != null) {
 
-			logger.info("加载监听地址和端口");
-			
 			String _proxyHost = (String) json.get("ProxyHost");
 
-			proxyHost = StringUtils.isBlank(_proxyHost) ? proxyHost : _proxyHost;
+			proxyHost = (_proxyHost == null || (_proxyHost = _proxyHost.trim()).length() == 0) ? proxyHost : _proxyHost;
 
 			String _proxyPort = (String) json.get("ProxyPort");
 
-			proxyPort = ( StringUtils.isBlank(_proxyPort) || !(_proxyPort = _proxyPort.trim()).matches("\\d+")) ? proxyPort : Integer.valueOf(_proxyPort);
+			proxyPort = (_proxyPort == null || !(_proxyPort = _proxyPort.trim()).matches("\\d+")) ? proxyPort : Integer.valueOf(_proxyPort);
+
 		}
 
 	}
-
 
 	/**
 	 * 用户线程
 	 */
 	public void run() {
 
-		logger.info("监听端口：" + listenPort);
+		logger.info("监听端口：" + listenPort +" 开始...");
 
 		if (encrypt == null || listenPort < 1024 || listenPort > 65536) {
 
 			kill = true;
 
-			logger.error("监听端口：" + listenPort + " 线程参数不符合条件，线程结束。");
+			logger.info("监听端口：" + listenPort + " 线程参数不符合条件，线程结束。");
 
 			return;
 
@@ -244,7 +235,7 @@ public class Server extends Thread {
 
 			kill = true;
 
-			logger.error("监听端口：" + listenPort + " 线程启动时出错，线程结束：",ex);
+			logger.error("监听端口：" + listenPort + " 线程启动时出错，线程结束: ",ex);
 
 			return;
 
@@ -268,7 +259,7 @@ public class Server extends Thread {
 
 				if (serverSocket != null && !serverSocket.isClosed()) {
 
-					logger.error("监听端口：" + listenPort + " 线程运行时出错，暂停3秒钟后重试。",ex);
+					logger.warn("监听端口：" + listenPort + " 线程运行时出错，暂停3秒钟后重试。");
 
 					_sleep(3000L);
 
@@ -276,17 +267,19 @@ public class Server extends Thread {
 
 				} else {
 
-					logger.error("监听端口：" + listenPort + " 线程运行时出错，线程结束。",ex);
+					logger.error("监听端口：" + listenPort + " 线程运行时出错，线程结束。");
 
 					break;
 
 				}
 
 			}
-
+			
 			ServerThread serverThread = new ServerThread(clientSocket, proxyHost, proxyPort, key);
+			logger.debug("服务端线程创建成功: "+serverThread.getName());
 
 			serverThread.start();
+			logger.debug("服务端线程启动完成...");
 
 		}
 
@@ -299,7 +292,7 @@ public class Server extends Thread {
 				serverSocket.close();
 
 			} catch (IOException ex) {
-				logger.error("serverSocket 关闭失败: ",ex);
+				logger.error("ServerSocket 关闭失败! ");
 			}
 
 			serverSocket = null;
@@ -314,10 +307,10 @@ public class Server extends Thread {
 	public void service() {
 
 		if (System.currentTimeMillis() - lockFile.lastModified() < 30 * 000L) {
-			
-			logger.warn("服务器已经在运行中");
 
-			logger.warn("如果确定没有运行，请删除 " + lockFile.getAbsolutePath() + "文件，重新启动");
+			logger.info("服务器已经在运行中");
+
+			logger.info("如果确定没有运行，请删除 " + lockFile.getAbsolutePath() + "文件，重新启动");
 
 			return;
 
@@ -325,20 +318,19 @@ public class Server extends Thread {
 
 		try {
 
-			logger.debug("创建锁文件");
 			lockFile.createNewFile();
 
 		} catch (IOException ioe) {
-			logger.error("锁文件创建失败: ",ioe);
+			logger.error("服务端锁文件创建失败!");
 		}
 
 		lockFile.deleteOnExit();
 
 		logger.info("GFW.Press服务器开始运行......");
 
-		logger.info("代理主机：" + proxyHost);
+		logger.info("代理主机: " + proxyHost);
 
-		logger.info("代理端口：" + proxyPort);
+		logger.info("代理端口: " + proxyPort);
 
 		Hashtable<String, String> users = null; // 用户
 
@@ -348,6 +340,7 @@ public class Server extends Thread {
 
 			lockFile.setLastModified(System.currentTimeMillis());
 
+			logger.debug("休眠20秒加载用户配置...");
 			_sleep(20 * 1000L); // 暂停20秒
 
 			logger.debug("开始加载用户列表...");
@@ -358,7 +351,6 @@ public class Server extends Thread {
 				continue;
 
 			}
-			logger.debug("加载完成...");
 
 			Enumeration<String> threadPorts = threads.keys(); // 用户线程的所有端口
 
