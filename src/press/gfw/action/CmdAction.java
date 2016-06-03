@@ -1,9 +1,8 @@
 package press.gfw.action;
 
-import java.io.IOException;
 import org.apache.log4j.Logger;
 import press.gfw.client.CmdClient;
-import press.gfw.client.Windows;
+import press.gfw.client.GfwFrame;
 import press.gfw.server.Server;
 import press.gfw.utils.CommandUtils;
 
@@ -30,12 +29,10 @@ public class CmdAction {
 		if (args==null||args.length==0) {
 			
 			logger.info("启动 GUI 客户端...");
-			try {
-				Windows.main(null);
-			} catch (IOException e1) {
-				logger.error("启动 GUI 客户端失败: ",e1);
-			}
+			GfwFrame.main(null);
+			
 		}else{
+			
 			switch (args[0]) {
 			
 			case "server":
@@ -47,11 +44,7 @@ public class CmdAction {
 				break;
 				
 			case "gui":
-				try {
-					Windows.main(null);
-				} catch (IOException e1) {
-					logger.error("启动 GUI 客户端失败: ",e1);
-				}
+				GfwFrame.main(null);
 				break;
 				
 			case "online":
