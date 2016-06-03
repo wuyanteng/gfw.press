@@ -4,7 +4,8 @@
 ## 一、客户端
 
 Windows 请访问 http://gfw.press/GFW.Press.msi 下载客户端安装包 配置填写完成，点击“确定”按钮
-Windows 下闪退有问题的可以直接下载JDK，运行 gfw.press_fat.jar，自己安装JDK 需要替换 JCE，具体请 Google
+
+Windows 下有闪退问题的可以直接下载JDK，运行 gfw.press_fat.jar，自己安装JDK 需要替换 JCE，具体请 Google
 
 Linux 使用项目根目录下的 gfw.press_fat.jar
 
