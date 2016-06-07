@@ -6,11 +6,11 @@
 高强度加密软件出口，所以下载的 sun JDK 需要替换 JCE 加密库， JCE [下载地址](http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html)
 ，使用教程请自行 Google，Linux 下直接使用 OpneJDK 不受影响。**
 
-- **项目正式切换到 Maven 构建，Maven 安装配置教程请自行 Goole，大致都一样，下载一个压缩包解压开配置一下环境变量即可。**
+- **项目正式切换到 Maven 构建，Maven 安装配置教程请自行 Google，下载一个压缩包解压开配置一下环境变量即可。**
 
 - **由于本项目客户端 UI 元素所依赖的类库在 Maven 中央仓库中没有，所以需要将其安装到本地仓库，
-Maven 安装完成后请 copy `gfw.pree/other/beautyeye_lnf.jar` 到任意位置，
-并执行 mvn_install_beautyeye 内的命令，出现 BUILD SUCCESS 表示成功。**
+Maven 安装完成后请 copy `gfw.pree/other/beautyeye_lnf.jar` 到任意位置，并执行 mvn_install_beautyeye
+内的命令，出现 BUILD SUCCESS 表示成功。**
 
 ## 二、客户端
 
