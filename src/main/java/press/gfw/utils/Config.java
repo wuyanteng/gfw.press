@@ -29,9 +29,9 @@ import java.util.Hashtable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * GFW.Press配置文件管理
@@ -98,19 +98,7 @@ public class Config {
 
 		}
 
-		JSONParser p = new JSONParser();
-
-		try {
-
-			return (JSONObject) p.parse(data);
-
-		} catch (ParseException ex) {
-
-			logger.error("字符串转化 JSON 对象失败: ",ex);
-
-		}
-
-		return null;
+		return JSON.parseObject(data);
 
 	}
 
@@ -323,7 +311,6 @@ public class Config {
 	 * @param json
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean saveClientConfig(JSONObject json) {
 
 		if (json == null) {
@@ -354,7 +341,6 @@ public class Config {
 	 * @param json
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean saveServerConfig(JSONObject json) {
 
 		if (json == null) {

@@ -29,7 +29,8 @@ import java.util.Hashtable;
 import javax.crypto.SecretKey;
 
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
+
+import com.alibaba.fastjson.JSONObject;
 
 import press.gfw.decrypt.Encrypt;
 import press.gfw.utils.Config;
