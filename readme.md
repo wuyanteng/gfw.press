@@ -31,9 +31,11 @@ Linux/Windwos 图形化界面可直接双击 gfw.press.jar 运行图形化客户
 <img width="603" alt="help" src="https://cloud.githubusercontent.com/assets/13043245/15628337/2d647b50-2531-11e6-9682-07e8909e97c0.png">
 
 
-## 二、服务器
+## 三、服务器
 
-### 第一步： 生成 gfw.press_fat.jar 并 copy 到任意目录
+### 第一步： 生成可执行 jar
+
+使用 maven 生成 gfw.press.jar 并 copy 到任意目录
 
 ### 第二步：安装 JDK
 
@@ -52,10 +54,10 @@ apt-get install openjdk-8-jdk
 **Ubuntu 系统直接运行项目根目录下的 3proxy.sh 即可，Centos 执行 `yum instsall 3proxy -y`，
 配制文件请参考 3proxy.sh 中两个 `EOF` 标记之间的配置内容，后端也可以采用 squid，具体后端方法请自行 Google 摸索.....**
 
-### 第四步：在 gfw.press.jar 同级目录创建 user.txt(用户配置)、server.json(服务器监听配置)
+### 第四步：创建配置文件
 
-两个配置文件项目中有样例，**user.txt 每行表示一个帐号，由 端口号+空格+密码组成，密码长度至少8位，
-必需包含大小写字母和数字。**
+在 gfw.press.jar 同级目录创建 user.txt(用户配置)、server.json(服务器监听配置)，两个配置文件项目中有样例，
+**user.txt 每行表示一个帐号，由 端口号+空格+密码组成，密码长度至少8位，必需包含大小写字母和数字。**
 
 ### 第五步：运行
 
