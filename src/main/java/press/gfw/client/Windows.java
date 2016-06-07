@@ -44,7 +44,8 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
-import org.json.simple.JSONObject;
+
+import com.alibaba.fastjson.JSONObject;
 
 import press.gfw.utils.Config;
 
@@ -466,7 +467,6 @@ public class Windows extends JFrame {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	private void saveConfig() {
 
 		JSONObject json = new JSONObject();
@@ -504,8 +504,6 @@ public class Windows extends JFrame {
 		client = new Client(serverHost, serverPort, password, proxyPort);
 
 		client.start();
-
-		// log(client.getName());
 
 	}
 

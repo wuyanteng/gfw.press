@@ -1,7 +1,8 @@
 package press.gfw.client;
 
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
+
+import com.alibaba.fastjson.JSONObject;
 
 import press.gfw.utils.Config;
 
