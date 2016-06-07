@@ -55,7 +55,6 @@ import press.gfw.utils.BareBonesBrowserLaunch;
  * @date: 2016年6月3日 下午3:15:07
  */
 public class GfwFrame extends JFrame{
-	
 
 	private Logger logger = Logger.getLogger(GfwFrame.class);
 	private static final long serialVersionUID = -269939047660955009L;
@@ -145,7 +144,7 @@ public class GfwFrame extends JFrame{
 	public GfwFrame() {
 		
 		//窗口最小化设置
-		setIconImage(Toolkit.getDefaultToolkit().getImage(GfwFrame.class.getResource("/press/gfw/images/g.png")));
+		setIconImage(Toolkit.getDefaultToolkit().getImage(GfwFrame.class.getResource("/press/gfw/images/logo.png")));
 		pop = new PopupMenu();
 		show = new MenuItem("打开程序");
 		exit = new MenuItem("退出程序");
@@ -153,7 +152,7 @@ public class GfwFrame extends JFrame{
 		pop.add(exit);
 		try {
 			systemTray = SystemTray.getSystemTray();
-			trayIcon = new TrayIcon(ImageIO.read(GfwFrame.class.getResourceAsStream("/press/gfw/images/g.png")),"邮件定时发送工具",pop);
+			trayIcon = new TrayIcon(ImageIO.read(GfwFrame.class.getResourceAsStream("/press/gfw/images/logo.png")),"邮件定时发送工具",pop);
 			trayIcon.setImageAutoSize(true);  //必须设置为true 让图盘图标自适应大小
 			systemTray.add(trayIcon);
 		} catch (IOException e) {
@@ -237,6 +236,7 @@ public class GfwFrame extends JFrame{
 		serverPasswd = new JPasswordField();
 		
 		JButton ok = new JButton("确定");
+		ok.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.green));
 		ok.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -299,6 +299,28 @@ public class GfwFrame extends JFrame{
 						
 					}
 
+					@Override
+					protected void done() {
+						
+						try {
+							
+							// 测试代理是否开启
+							String lPort = StringUtils.isNotBlank(listenPort.getText())?listenPort.getText():"3128";
+							Socket testSocket= new Socket("127.0.0.1", Integer.parseInt(lPort)); 
+							testSocket.close();
+							
+							// 刷新UI 
+							ok.setText("停止");
+							ok.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.red));
+							
+						} catch (Exception e) {
+							
+							// 刷新UI 
+							ok.setText("启动");
+							ok.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.red));
+						}
+						
+					}
 					
 				}.execute();
 				
@@ -306,8 +328,6 @@ public class GfwFrame extends JFrame{
 				
 			}
 		});
-		
-		ok.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.green));
 		
 		JButton clean = new JButton("清空");
 		clean.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.red));
