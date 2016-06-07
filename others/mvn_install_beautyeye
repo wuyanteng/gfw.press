@@ -1,0 +1,6 @@
+mvn install:install-file \
+-Dfile=beautyeye_lnf.jar \
+-DgroupId=org.jb2011.lnf.beautyeye \
+-DartifactId=beautyeye_lnf \
+-Dversion=3.7 \
+-Dpackaging=jar
