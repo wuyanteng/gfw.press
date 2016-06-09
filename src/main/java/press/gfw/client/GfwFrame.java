@@ -84,7 +84,7 @@ public class GfwFrame extends JFrame{
 			UIManager.put("RootPane.setupButtonVisible", false);
 			org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper.launchBeautyEyeLNF();
 		} catch (Exception e) {
-			Logger.getLogger(Windows.class).error("BeautyEye初始化失败,异常信息: ", e);
+			Logger.getLogger(GfwFrame.class).error("BeautyEye初始化失败,异常信息: ", e);
 		}
 		
 		EventQueue.invokeLater(new Runnable() {
