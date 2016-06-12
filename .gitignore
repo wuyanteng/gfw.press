@@ -1,9 +1,9 @@
 /log/
 /client.lock
 /user.txt
-/bin/
-/.fatjar
-/.DS_Store
-/.settings/
 /.gitignore
 /target/
+gfw.press.iml
+gfw.press.ipr
+gfw.press.iws
+
