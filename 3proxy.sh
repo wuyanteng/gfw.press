@@ -83,8 +83,8 @@ EOF
 #
 ### BEGIN INIT INFO
 # Provides: 3Proxy
-# Required-Start: $remote_fs $syslog
-# Required-Stop: $remote_fs $syslog
+# Required-Start: \$remote_fs $syslog
+# Required-Stop: \$remote_fs $syslog
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6
 # Short-Description: Initialize 3proxy server
@@ -97,7 +97,7 @@ case "\$1" in
 		/usr/local/etc/3proxy/bin/3proxy /usr/local/etc/3proxy/3proxy.cfg
 		 ;;
 	 stop)  echo "Stopping 3Proxy" ;
-		kill `ps aux | grep 3proxy | grep -v grep | awk '{print \$2}'`
+		kill \ `ps aux | grep 3proxy | grep -v grep | awk '{print \$2}'`
 		;;
 	    *)  echo Usage: \\\$0 "{start|stop}" ;
 		exit 1 ;
