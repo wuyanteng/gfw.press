@@ -31,6 +31,10 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
 					name: "about"
 					"text": "关于"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "menuItem1"
+						"text": "项目主页"
+					} )
 				} )
 			}
 		}, new FormLayoutConstraints( null ) {
