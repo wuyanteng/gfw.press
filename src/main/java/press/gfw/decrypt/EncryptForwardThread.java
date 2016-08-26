@@ -1,22 +1,20 @@
 /**
-* 
-*    GFW.Press
-*    Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
-*
-*    This program is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*    
-**/
+ * GFW.Press
+ * Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
 package press.gfw.decrypt;
 
 import java.io.IOException;
@@ -31,122 +29,122 @@ import press.gfw.server.PointThread;
 
 /**
  * GFW.Press加密及转发线程
- * 
+ *
  * @author chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
  *
  */
 public class EncryptForwardThread extends Thread {
-	
-	private static Logger logger = Logger.getLogger(EncryptForwardThread.class);
 
-	private static final int BUFFER_SIZE_MIN = 1024 * 128; // 缓冲区最小值，128K
+    private static Logger logger = Logger.getLogger(EncryptForwardThread.class);
 
-	private static final int BUFFER_SIZE_MAX = 1024 * 512; // 缓冲区最大值，512K
+    private static final int BUFFER_SIZE_MIN = 1024 * 128; // 缓冲区最小值，128K
 
-	private static final int BUFFER_SIZE_STEP = 1024 * 128; // 缓冲区自动调整的步长值，128K
+    private static final int BUFFER_SIZE_MAX = 1024 * 512; // 缓冲区最大值，512K
 
-	private InputStream inputStream = null;
+    private static final int BUFFER_SIZE_STEP = 1024 * 128; // 缓冲区自动调整的步长值，128K
 
-	private OutputStream outputStream = null;
+    private InputStream inputStream = null;
 
-	private PointThread parent = null;
+    private OutputStream outputStream = null;
 
-	private Encrypt aes = null;
+    private PointThread parent = null;
 
-	private SecretKey key = null;
+    private Encrypt aes = null;
 
-	/**
-	 * 构造方法
-	 * 
-	 * @param parent
-	 *          父线程
-	 * @param inputStream
-	 *          输入流
-	 * @param outputStream
-	 *          输出流
-	 * 
-	 */
-	public EncryptForwardThread(PointThread parent, InputStream inputStream, OutputStream outputStream, SecretKey key) {
+    private SecretKey key = null;
 
-		this.parent = parent;
+    /**
+     * 构造方法
+     *
+     * @param parent
+     *          父线程
+     * @param inputStream
+     *          输入流
+     * @param outputStream
+     *          输出流
+     *
+     */
+    public EncryptForwardThread(PointThread parent, InputStream inputStream, OutputStream outputStream, SecretKey key) {
 
-		this.inputStream = inputStream;
+        this.parent = parent;
 
-		this.outputStream = outputStream;
+        this.inputStream = inputStream;
 
-		this.key = key;
+        this.outputStream = outputStream;
 
-		aes = new Encrypt();
+        this.key = key;
 
-	}
+        aes = new Encrypt();
 
-	/**
-	 * 加密转发
-	 */
-	public void run() {
+    }
 
-		byte[] buffer = new byte[BUFFER_SIZE_MIN];
+    /**
+     * 加密转发
+     */
+    public void run() {
 
-		byte[] read_bytes = null;
+        byte[] buffer = new byte[BUFFER_SIZE_MIN];
 
-		byte[] encrypt_bytes = null;
+        byte[] read_bytes = null;
 
-		try {
+        byte[] encrypt_bytes = null;
 
-			while (true) {
+        try {
 
-				int read_num = inputStream.read(buffer);
+            while (true) {
 
-				if (read_num == -1) {
+                int read_num = inputStream.read(buffer);
 
-					break;
+                if (read_num == -1) {
 
-				}
+                    break;
 
-				read_bytes = new byte[read_num];
+                }
 
-				System.arraycopy(buffer, 0, read_bytes, 0, read_num);
+                read_bytes = new byte[read_num];
 
-				encrypt_bytes = aes.encryptNet(key, read_bytes);
+                System.arraycopy(buffer, 0, read_bytes, 0, read_num);
 
-				if (encrypt_bytes == null) {
+                encrypt_bytes = aes.encryptNet(key, read_bytes);
 
-					break; // 加密出错，退出
+                if (encrypt_bytes == null) {
 
-				}
+                    break; // 加密出错，退出
 
-				outputStream.write(encrypt_bytes);
+                }
 
-				outputStream.flush();
+                outputStream.write(encrypt_bytes);
 
-				if (read_num == buffer.length && read_num < BUFFER_SIZE_MAX) { // 自动调整缓冲区大小
+                outputStream.flush();
 
-					buffer = new byte[read_num + BUFFER_SIZE_STEP];
+                if (read_num == buffer.length && read_num < BUFFER_SIZE_MAX) { // 自动调整缓冲区大小
 
-					logger.warn(this.getName() + " 缓冲区大小自动调整为：" + buffer.length);
+                    buffer = new byte[read_num + BUFFER_SIZE_STEP];
 
-				} else if (read_num < (buffer.length - BUFFER_SIZE_STEP) && (buffer.length - BUFFER_SIZE_STEP) >= BUFFER_SIZE_MIN) {
+                    logger.warn(this.getName() + " 缓冲区大小自动调整为：" + buffer.length);
 
-					buffer = new byte[buffer.length - BUFFER_SIZE_STEP];
+                } else if (read_num < (buffer.length - BUFFER_SIZE_STEP) && (buffer.length - BUFFER_SIZE_STEP) >= BUFFER_SIZE_MIN) {
 
-					logger.warn(this.getName() + " 缓冲区大小自动调整为：" + +buffer.length);
+                    buffer = new byte[buffer.length - BUFFER_SIZE_STEP];
 
-				}
+                    logger.warn(this.getName() + " 缓冲区大小自动调整为：" + +buffer.length);
 
-			}
+                }
 
-		} catch (IOException ex) {
-			logger.error("加密转发出错: ",ex);
-		}
+            }
 
-		buffer = null;
+        } catch (IOException ex) {
+            logger.error("加密转发出错: ", ex);
+        }
 
-		read_bytes = null;
+        buffer = null;
 
-		encrypt_bytes = null;
+        read_bytes = null;
 
-		parent.over();
+        encrypt_bytes = null;
 
-	}
+        parent.over();
+
+    }
 
 }

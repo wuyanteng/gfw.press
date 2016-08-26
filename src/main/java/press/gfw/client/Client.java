@@ -1,22 +1,20 @@
 /**
-* 
-*    GFW.Press
-*    Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
-*
-*    This program is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*    
-**/
+ * GFW.Press
+ * Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
 package press.gfw.client;
 
 import java.io.File;
@@ -31,263 +29,263 @@ import org.apache.log4j.Logger;
 import press.gfw.decrypt.Encrypt;
 
 /**
- * 
+ *
  * GFW.Press客户端
- * 
+ *
  * @author chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
  *
  */
 public class Client extends Thread {
-	
-	private static Logger logger = Logger.getLogger(Client.class);
 
-	private int listenPort = 0;
+    private static Logger logger = Logger.getLogger(Client.class);
 
-	private String serverHost = null;
+    private int listenPort = 0;
 
-	private int serverPort = 0;
+    private String serverHost = null;
 
-	private String password = null;
+    private int serverPort = 0;
 
-	private SecretKey key = null;
+    private String password = null;
 
-	private Encrypt aes = null;
+    private SecretKey key = null;
 
-	private boolean kill = false;
+    private Encrypt aes = null;
 
-	private String status = null;
+    private boolean kill = false;
 
-	private ServerSocket listenSocket = null;
+    private String status = null;
 
-	public Client(String serverHost, int serverPort, String password, int listenPort) {
+    private ServerSocket listenSocket = null;
 
-		super();
+    public Client(String serverHost, int serverPort, String password, int listenPort) {
 
-		this.listenPort = listenPort;
+        super();
 
-		this.serverHost = (serverHost == null) ? null : serverHost.trim();
+        this.listenPort = listenPort;
 
-		this.serverPort = serverPort;
+        this.serverHost = (serverHost == null) ? null : serverHost.trim();
 
-		this.password = (password == null) ? null : password.trim();
+        this.serverPort = serverPort;
 
-		aes = new Encrypt();
+        this.password = (password == null) ? null : password.trim();
 
-		if (aes.isPassword(this.password)) {
+        aes = new Encrypt();
 
-			key = aes.getPasswordKey(this.password);
+        if (aes.isPassword(this.password)) {
 
-		}
+            key = aes.getPasswordKey(this.password);
 
-	}
+        }
 
-	public Client(String serverHost, String serverPort, String password, String listenPort) {
+    }
 
-		this(serverHost, (serverPort != null && (serverPort = serverPort.trim()).matches("\\d+")) ? Integer.valueOf(serverPort) : 0, password, (listenPort != null && (listenPort = listenPort.trim()).matches("\\d+")) ? Integer.valueOf(listenPort) : 0);
+    public Client(String serverHost, String serverPort, String password, String listenPort) {
 
-	}
+        this(serverHost, (serverPort != null && (serverPort = serverPort.trim()).matches("\\d+")) ? Integer.valueOf(serverPort) : 0, password, (listenPort != null && (listenPort = listenPort.trim()).matches("\\d+")) ? Integer.valueOf(listenPort) : 0);
 
-	private void _sleep(long m) {
+    }
 
-		try {
+    private void _sleep(long m) {
 
-			sleep(m);
+        try {
 
-		} catch (InterruptedException ie) {
+            sleep(m);
 
-		}
+        } catch (InterruptedException ie) {
 
-	}
+        }
 
-	
-	public synchronized void kill() {
+    }
 
-		kill = true;
 
-		if (listenSocket != null && !listenSocket.isClosed()) {
+    public synchronized void kill() {
 
-			try {
+        kill = true;
 
-				listenSocket.close();
+        if (listenSocket != null && !listenSocket.isClosed()) {
 
-			} catch (IOException ex) {
+            try {
 
-			}
+                listenSocket.close();
 
-			listenSocket = null;
+            } catch (IOException ex) {
 
-		}
+            }
 
-	}
+            listenSocket = null;
 
+        }
 
-	/**
-	 * 启动客户端
-	 * 
-	 * @return
-	 */
-	public void run() {
+    }
 
-		logger.debug("代理线程启动...");
-		
-		logger.debug("启动参数:\nserverHost: "+serverHost+"\nserverPort: "+serverPort+"\nlistenPort: "+listenPort+"\npassword: "+password);
-		
-		if (serverHost == null || (serverHost = serverHost.trim()).length() == 0 || serverPort == 0 || listenPort == 0 || key == null) {
 
-			status = "启动失败：配置错误";
+    /**
+     * 启动客户端
+     *
+     * @return
+     */
+    public void run() {
 
-			logger.error("参数错误,启动失败!");
-			kill = true;
+        logger.debug("代理线程启动...");
 
-			return;
+        logger.debug("启动参数:\nserverHost: " + serverHost + "\nserverPort: " + serverPort + "\nlistenPort: " + listenPort + "\npassword: " + password);
 
-		}
+        if (serverHost == null || (serverHost = serverHost.trim()).length() == 0 || serverPort == 0 || listenPort == 0 || key == null) {
 
-		logger.debug("创建客户端锁文件...");
-		File lockFile = new File("client.lock");
+            status = "启动失败：配置错误";
 
-		try {
+            logger.error("参数错误,启动失败!");
+            kill = true;
 
-			listenSocket = new ServerSocket(listenPort);
+            return;
 
-		} catch (IOException ex) {
-			
-			logger.error("客户端锁文件创建失败: ",ex);
+        }
 
-			if (lockFile.exists()) {
+        logger.debug("创建客户端锁文件...");
+        File lockFile = new File("client.lock");
 
-				System.exit(0);
+        try {
 
-			}
+            listenSocket = new ServerSocket(listenPort);
 
-			kill = true;
+        } catch (IOException ex) {
 
-			status = "线程" + getName() + "启动时监听" + listenPort + "端口出错，线程结束。";
+            logger.error("客户端锁文件创建失败: ", ex);
 
-			return;
+            if (lockFile.exists()) {
 
-		}
+                System.exit(0);
 
-		lockFile.deleteOnExit();
+            }
 
-		if (!lockFile.exists()) {
+            kill = true;
 
-			try {
+            status = "线程" + getName() + "启动时监听" + listenPort + "端口出错，线程结束。";
 
-				lockFile.createNewFile();
+            return;
 
-			} catch (IOException ioe) {
-				logger.error("客户端锁文件创建失败: ",ioe);
-			}
+        }
 
-		}
+        lockFile.deleteOnExit();
 
-		while (!kill) {
+        if (!lockFile.exists()) {
 
-			Socket agentSocket = null;
+            try {
 
-			try {
+                lockFile.createNewFile();
 
-				agentSocket = listenSocket.accept();
+            } catch (IOException ioe) {
+                logger.error("客户端锁文件创建失败: ", ioe);
+            }
 
-			} catch (IOException ex) {
+        }
 
-				if (listenSocket != null && !listenSocket.isClosed()) {
+        while (!kill) {
 
-					status = "线程" + getName() + "运行时监听" + listenPort + "端口出错，休息3秒钟后重试。";
-					
-					logger.warn(status);
-					
-					_sleep(3000L);
+            Socket agentSocket = null;
 
-					continue;
+            try {
 
-				} else {
+                agentSocket = listenSocket.accept();
 
-					status = "线程" + getName() + "运行时监听" + listenPort + "端口出错，线程结束。";
-					
-					logger.error(status);
-					
-					break;
+            } catch (IOException ex) {
 
-				}
+                if (listenSocket != null && !listenSocket.isClosed()) {
 
-			}
+                    status = "线程" + getName() + "运行时监听" + listenPort + "端口出错，休息3秒钟后重试。";
 
-			ClientThread clientThread = new ClientThread(agentSocket, serverHost, serverPort, key);
-			logger.info(clientThread.getName() + " Socket 通讯客户端线程创建...");
-			clientThread.start();
-			logger.info(clientThread.getName() + " Socket 通讯客户端线程启动...");
+                    logger.warn(status);
 
-		}
+                    _sleep(3000L);
 
-		if (listenSocket != null && !listenSocket.isClosed()) {
+                    continue;
 
-			try {
+                } else {
 
-				listenSocket.close();
+                    status = "线程" + getName() + "运行时监听" + listenPort + "端口出错，线程结束。";
 
-			} catch (IOException ex) {
+                    logger.error(status);
 
-			}
+                    break;
 
-			listenSocket = null;
+                }
 
-		}
+            }
 
-		kill = true;
+            ClientThread clientThread = new ClientThread(agentSocket, serverHost, serverPort, key);
+            logger.info(clientThread.getName() + " Socket 通讯客户端线程创建...");
+            clientThread.start();
+            logger.info(clientThread.getName() + " Socket 通讯客户端线程启动...");
 
-	}
-	
-	/*********** SET GET Method ************/
-	
-	/**
-	 * @return the listenPort
-	 */
-	public synchronized int getListenPort() {
+        }
 
-		return listenPort;
-	}
+        if (listenSocket != null && !listenSocket.isClosed()) {
 
-	/**
-	 * @return the password
-	 */
-	public synchronized String getPassword() {
+            try {
 
-		return password;
-	}
+                listenSocket.close();
 
-	/**
-	 * @return the serverHost
-	 */
-	public synchronized String getServerHost() {
+            } catch (IOException ex) {
 
-		return serverHost;
-	}
+            }
 
-	/**
-	 * @return the serverPort
-	 */
-	public synchronized int getServerPort() {
+            listenSocket = null;
 
-		return serverPort;
-	}
+        }
 
-	/**
-	 * @return the status
-	 */
-	public synchronized String getStatus() {
+        kill = true;
 
-		return status;
-	}
+    }
 
-	/**
-	 * @return the kill
-	 */
-	public synchronized boolean isKill() {
+    /*********** SET GET Method ************/
 
-		return kill;
-	}
+    /**
+     * @return the listenPort
+     */
+    public synchronized int getListenPort() {
+
+        return listenPort;
+    }
+
+    /**
+     * @return the password
+     */
+    public synchronized String getPassword() {
+
+        return password;
+    }
+
+    /**
+     * @return the serverHost
+     */
+    public synchronized String getServerHost() {
+
+        return serverHost;
+    }
+
+    /**
+     * @return the serverPort
+     */
+    public synchronized int getServerPort() {
+
+        return serverPort;
+    }
+
+    /**
+     * @return the status
+     */
+    public synchronized String getStatus() {
+
+        return status;
+    }
+
+    /**
+     * @return the kill
+     */
+    public synchronized boolean isKill() {
+
+        return kill;
+    }
 
 
 }

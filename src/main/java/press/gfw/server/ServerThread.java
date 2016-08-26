@@ -1,22 +1,20 @@
 /**
-* 
-*    GFW.Press
-*    Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
-*
-*    This program is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*    
-**/
+ * GFW.Press
+ * Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
 package press.gfw.server;
 
 import java.io.IOException;
@@ -32,130 +30,129 @@ import press.gfw.decrypt.DecryptForwardThread;
 import press.gfw.decrypt.EncryptForwardThread;
 
 /**
- * 
+ *
  * GFW.Press服务器线程
- * 
+ *
  * @author chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
  *
  */
 public class ServerThread extends PointThread {
-	
-	private static Logger logger = Logger.getLogger(ServerThread.class);
 
-	private String proxyHost = null;
+    private static Logger logger = Logger.getLogger(ServerThread.class);
 
-	private int proxyPort = 0;
+    private String proxyHost = null;
 
-	private Socket clientSocket = null;
+    private int proxyPort = 0;
 
-	private Socket proxySocket = null;
+    private Socket clientSocket = null;
 
-	private SecretKey key = null;
+    private Socket proxySocket = null;
 
-	private boolean forwarding = false;
+    private SecretKey key = null;
 
-	public ServerThread(Socket clientSocket, String proxyHost, int proxyPort, SecretKey key) {
+    private boolean forwarding = false;
 
-		this.clientSocket = clientSocket;
+    public ServerThread(Socket clientSocket, String proxyHost, int proxyPort, SecretKey key) {
 
-		this.proxyHost = proxyHost;
+        this.clientSocket = clientSocket;
 
-		this.proxyPort = proxyPort;
+        this.proxyHost = proxyHost;
 
-		this.key = key;
+        this.proxyPort = proxyPort;
 
-	}
+        this.key = key;
 
-	
+    }
 
-	/**
-	 * 关闭所有连接，此线程及转发子线程调用
-	 */
-	public synchronized void over() {
 
-		try {
+    /**
+     * 关闭所有连接，此线程及转发子线程调用
+     */
+    public synchronized void over() {
 
-			proxySocket.close();
+        try {
 
-		} catch (Exception e) {
-			logger.error("ProxySocket 关闭失败: ",e);
-		}
+            proxySocket.close();
 
-		try {
+        } catch (Exception e) {
+            logger.error("ProxySocket 关闭失败: ", e);
+        }
 
-			clientSocket.close();
+        try {
 
-		} catch (Exception e) {
-			logger.error("ClientSocket 关闭失败: ",e);
-		}
+            clientSocket.close();
 
-		if (forwarding) {
+        } catch (Exception e) {
+            logger.error("ClientSocket 关闭失败: ", e);
+        }
 
-			forwarding = false;
+        if (forwarding) {
 
-		}
+            forwarding = false;
 
-	}
+        }
 
-	/**
-	 * 启动服务器与客户端之间的转发线程，并对数据进行加密及解密
-	 */
-	public void run() {
+    }
 
-		InputStream clientIn = null;
+    /**
+     * 启动服务器与客户端之间的转发线程，并对数据进行加密及解密
+     */
+    public void run() {
 
-		OutputStream clientOut = null;
+        InputStream clientIn = null;
 
-		InputStream proxyIn = null;
+        OutputStream clientOut = null;
 
-		OutputStream proxyOut = null;
+        InputStream proxyIn = null;
 
-		try {
+        OutputStream proxyOut = null;
 
-			// 连接代理服务器
-			logger.debug("创建 ProxySocket...");
-			proxySocket = new Socket(proxyHost, proxyPort);
+        try {
 
-			// 设置3分钟超时
-			logger.debug("设置 ProxySocket ClientSocket 超时3分钟...");
-			proxySocket.setSoTimeout(180000);
-			clientSocket.setSoTimeout(180000);
+            // 连接代理服务器
+            logger.debug("创建 ProxySocket...");
+            proxySocket = new Socket(proxyHost, proxyPort);
 
-			// 打开 keep-alive
-			logger.debug("开启 KeepAlive...");
-			proxySocket.setKeepAlive(true);
-			clientSocket.setKeepAlive(true);
+            // 设置3分钟超时
+            logger.debug("设置 ProxySocket ClientSocket 超时3分钟...");
+            proxySocket.setSoTimeout(180000);
+            clientSocket.setSoTimeout(180000);
 
-			// 获取输入输出流
-			clientIn = clientSocket.getInputStream();
-			clientOut = clientSocket.getOutputStream();
+            // 打开 keep-alive
+            logger.debug("开启 KeepAlive...");
+            proxySocket.setKeepAlive(true);
+            clientSocket.setKeepAlive(true);
 
-			proxyIn = proxySocket.getInputStream();
-			proxyOut = proxySocket.getOutputStream();
+            // 获取输入输出流
+            clientIn = clientSocket.getInputStream();
+            clientOut = clientSocket.getOutputStream();
 
-		} catch (IOException ex) {
+            proxyIn = proxySocket.getInputStream();
+            proxyOut = proxySocket.getOutputStream();
 
-			logger.error("连接代理服务器出错：" + proxyHost + ":" + proxyPort,ex);
+        } catch (IOException ex) {
 
-			over();
+            logger.error("连接代理服务器出错：" + proxyHost + ":" + proxyPort, ex);
 
-			return;
+            over();
 
-		}
+            return;
 
-		// 开始转发
-		forwarding = true;
+        }
 
-		logger.debug("解密转发线程创建...");
-		DecryptForwardThread forwardProxy = new DecryptForwardThread(this, clientIn, proxyOut, key);
-		logger.debug("解密转发 "+forwardProxy.getName()+" 线程启动...");
-		forwardProxy.start();
+        // 开始转发
+        forwarding = true;
 
-		logger.debug("加密转发线程创建...");
-		EncryptForwardThread forwardClient = new EncryptForwardThread(this, proxyIn, clientOut, key);
-		logger.debug("加密转发 "+forwardClient.getName()+" 线程启动...");
-		forwardClient.start();
+        logger.debug("解密转发线程创建...");
+        DecryptForwardThread forwardProxy = new DecryptForwardThread(this, clientIn, proxyOut, key);
+        logger.debug("解密转发 " + forwardProxy.getName() + " 线程启动...");
+        forwardProxy.start();
 
-	}
+        logger.debug("加密转发线程创建...");
+        EncryptForwardThread forwardClient = new EncryptForwardThread(this, proxyIn, clientOut, key);
+        logger.debug("加密转发 " + forwardClient.getName() + " 线程启动...");
+        forwardClient.start();
+
+    }
 
 }

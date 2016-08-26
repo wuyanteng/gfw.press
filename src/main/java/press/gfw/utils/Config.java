@@ -1,22 +1,20 @@
 /**
-* 
-*    GFW.Press
-*    Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
-*
-*    This program is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*    
-**/
+ * GFW.Press
+ * Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
 package press.gfw.utils;
 
 import java.io.File;
@@ -35,334 +33,334 @@ import com.alibaba.fastjson.JSONObject;
 
 /**
  * GFW.Press配置文件管理
- * 
+ *
  * @author chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
  *
  */
 public class Config {
-	
-	private static Logger logger = Logger.getLogger(Config.class);
 
-	public static final String CHARSET = "utf-8";
+    private static Logger logger = Logger.getLogger(Config.class);
 
-	public static void main(String[] args) {
+    public static final String CHARSET = "utf-8";
 
-		Config c = new Config();
+    public static void main(String[] args) {
 
-		Hashtable<String, String> users = c.getUser();
+        Config c = new Config();
 
-		System.out.println(users);
+        Hashtable<String, String> users = c.getUser();
 
-	}
+        System.out.println(users);
 
-	private File clientFile = null;
+    }
 
-	private File serverFile = null;
+    private File clientFile = null;
 
-	private File userFile = null;
+    private File serverFile = null;
 
-	private long userFileTime = 0L;
+    private File userFile = null;
 
-	public Config() {
+    private long userFileTime = 0L;
 
-		clientFile = new File("client.json");
+    public Config() {
 
-		serverFile = new File("server.json");
+        clientFile = new File("client.json");
 
-		userFile = new File("user.txt");
+        serverFile = new File("server.json");
 
-	}
+        userFile = new File("user.txt");
 
-	/**
-	 * 获取客户端配置文件
-	 * 
-	 * @return
-	 */
-	public JSONObject getClientConfig() {
+    }
 
-		return getJSON(read(clientFile));
+    /**
+     * 获取客户端配置文件
+     *
+     * @return
+     */
+    public JSONObject getClientConfig() {
 
-	}
+        return getJSON(read(clientFile));
 
-	/**
-	 * 字符串转JSON对象
-	 * 
-	 * @param data
-	 * @return
-	 */
-	public JSONObject getJSON(String data) {
+    }
 
-		if (data == null || (data = data.trim()).length() == 0) {
+    /**
+     * 字符串转JSON对象
+     *
+     * @param data
+     * @return
+     */
+    public JSONObject getJSON(String data) {
 
-			return null;
+        if (data == null || (data = data.trim()).length() == 0) {
 
-		}
+            return null;
 
-		return JSON.parseObject(data);
+        }
 
-	}
+        return JSON.parseObject(data);
 
-	/**
-	 * 获取服务器配置
-	 * 
-	 * @return
-	 */
-	public JSONObject getServerConfig() {
+    }
 
-		return getJSON(read(serverFile));
+    /**
+     * 获取服务器配置
+     *
+     * @return
+     */
+    public JSONObject getServerConfig() {
 
-	}
+        return getJSON(read(serverFile));
 
-	public Hashtable<String, String> getUser() {
+    }
 
-		if (userFile.lastModified() == userFileTime) {
+    public Hashtable<String, String> getUser() {
 
-			return null;
+        if (userFile.lastModified() == userFileTime) {
 
-		}
+            return null;
 
-		userFileTime = userFile.lastModified();
+        }
 
-		String text = read(userFile);
+        userFileTime = userFile.lastModified();
 
-		if (StringUtils.isBlank(text)) {
+        String text = read(userFile);
 
-			logger.warn("用户配置文件读取失败");
-			return null;
+        if (StringUtils.isBlank(text)) {
 
-		}
+            logger.warn("用户配置文件读取失败");
+            return null;
 
-		String[] lines = text.trim().split("\n");
+        }
 
-		text = null;
+        String[] lines = text.trim().split("\n");
 
-		if (lines == null || lines.length == 0) {
-			
-			logger.warn("用户配置文件为空");
-			return null;
+        text = null;
 
-		}
+        if (lines == null || lines.length == 0) {
 
-		Hashtable<String, String> users = new Hashtable<String, String>(lines.length);
+            logger.warn("用户配置文件为空");
+            return null;
 
-		for (int i = 0; i < lines.length; i++) {
+        }
 
-			String[] cols = lines[i].trim().split(" ");
+        Hashtable<String, String> users = new Hashtable<String, String>(lines.length);
 
-			if (cols == null || cols.length < 2 || !(cols[0] = cols[0].trim()).matches("\\d+") || (cols[cols.length - 1] = cols[cols.length - 1].trim()).length() < 8) {
+        for (int i = 0; i < lines.length; i++) {
 
-				continue;
+            String[] cols = lines[i].trim().split(" ");
 
-			}
+            if (cols == null || cols.length < 2 || !(cols[0] = cols[0].trim()).matches("\\d+") || (cols[cols.length - 1] = cols[cols.length - 1].trim()).length() < 8) {
 
-			users.put(cols[0], cols[cols.length - 1]);
+                continue;
 
-		}
+            }
 
-		return users.size() > 0 ? users : null;
+            users.put(cols[0], cols[cols.length - 1]);
 
-	}
+        }
 
-	/**
-	 * 打印信息
-	 * 
-	 * @param o
-	 */
-	private void log(Object o) {
+        return users.size() > 0 ? users : null;
 
-		String time = (new Timestamp(System.currentTimeMillis())).toString().substring(0, 19);
+    }
 
-		System.out.println("[" + time + "] " + o.toString());
+    /**
+     * 打印信息
+     *
+     * @param o
+     */
+    private void log(Object o) {
 
-	}
+        String time = (new Timestamp(System.currentTimeMillis())).toString().substring(0, 19);
 
-	/**
-	 * 读文件内容
-	 * 
-	 * @param file
-	 * @return
-	 */
-	public String read(File file) {
+        System.out.println("[" + time + "] " + o.toString());
 
-		int size = 0;
+    }
 
-		if (file == null || !file.exists() || (size = (int) file.length()) == 0) {
-			
-			logger.error("待加载配置文件为空!");
-			return null;
+    /**
+     * 读文件内容
+     *
+     * @param file
+     * @return
+     */
+    public String read(File file) {
 
-		}
+        int size = 0;
 
-		byte[] bytes = new byte[size];
+        if (file == null || !file.exists() || (size = (int) file.length()) == 0) {
 
-		FileInputStream fis = null;
+            logger.error("待加载配置文件为空!");
+            return null;
 
-		int count = 0;
+        }
 
-		try {
+        byte[] bytes = new byte[size];
 
-			fis = new FileInputStream(file);
+        FileInputStream fis = null;
 
-			for (; size != count;) {
+        int count = 0;
 
-				int read = fis.read(bytes, count, size - count);
+        try {
 
-				if (read == -1) {
+            fis = new FileInputStream(file);
 
-					break;
+            for (; size != count; ) {
 
-				}
+                int read = fis.read(bytes, count, size - count);
 
-				count += read;
+                if (read == -1) {
 
-			}
+                    break;
 
-		} catch (IOException ex) {
+                }
 
-			logger.error("读取 JSON 配置文件出现异常: ",ex);
+                count += read;
 
-			return null;
+            }
 
-		} finally {
+        } catch (IOException ex) {
 
-			try {
+            logger.error("读取 JSON 配置文件出现异常: ", ex);
 
-				fis.close();
+            return null;
 
-			} catch (IOException ex) {
-				logger.error("加载 JSON 配置文件出错，资源释放失败: ",ex);
-			}
+        } finally {
 
-		}
+            try {
 
-		if (count != size) {
+                fis.close();
 
-			logger.error("读取配置文件不完整，配置文件加载失败");
-			return null;
+            } catch (IOException ex) {
+                logger.error("加载 JSON 配置文件出错，资源释放失败: ", ex);
+            }
 
-		}
+        }
 
-		try {
+        if (count != size) {
 
-			return new String(bytes, CHARSET);
+            logger.error("读取配置文件不完整，配置文件加载失败");
+            return null;
 
-		} catch (UnsupportedEncodingException ex) {
+        }
 
-			logger.error("文件内容转化字符串出错: ",ex);
+        try {
 
-		}
+            return new String(bytes, CHARSET);
 
-		return null;
+        } catch (UnsupportedEncodingException ex) {
 
-	}
+            logger.error("文件内容转化字符串出错: ", ex);
 
-	/**
-	 * 保存内容到文件
-	 * 
-	 * @param file
-	 * @param text
-	 * @return
-	 */
-	public boolean save(File file, String text) {
+        }
 
-		if (file == null || text == null || (text = text.trim()).length() == 0) {
+        return null;
 
-			return false;
+    }
 
-		}
+    /**
+     * 保存内容到文件
+     *
+     * @param file
+     * @param text
+     * @return
+     */
+    public boolean save(File file, String text) {
 
-		FileOutputStream fos = null;
+        if (file == null || text == null || (text = text.trim()).length() == 0) {
 
-		try {
+            return false;
 
-			fos = new FileOutputStream(file);
+        }
 
-			fos.write(text.getBytes(CHARSET));
+        FileOutputStream fos = null;
 
-			fos.flush();
+        try {
 
-		} catch (IOException ex) {
+            fos = new FileOutputStream(file);
 
-			log("写文件出错：");
+            fos.write(text.getBytes(CHARSET));
 
-			ex.printStackTrace();
+            fos.flush();
 
-			return false;
+        } catch (IOException ex) {
 
-		} finally {
+            log("写文件出错：");
 
-			try {
+            ex.printStackTrace();
 
-				fos.close();
+            return false;
 
-			} catch (IOException ex) {
+        } finally {
 
-			}
+            try {
 
-		}
+                fos.close();
 
-		return true;
+            } catch (IOException ex) {
 
-	}
+            }
 
-	/**
-	 * 保存客户端配置文件
-	 * 
-	 * @param json
-	 * @return
-	 */
-	public boolean saveClientConfig(JSONObject json) {
+        }
 
-		if (json == null) {
+        return true;
 
-			return false;
+    }
 
-		}
+    /**
+     * 保存客户端配置文件
+     *
+     * @param json
+     * @return
+     */
+    public boolean saveClientConfig(JSONObject json) {
 
-		JSONObject _json = getClientConfig();
+        if (json == null) {
 
-		if (_json == null) {
+            return false;
 
-			_json = json;
+        }
 
-		} else {
+        JSONObject _json = getClientConfig();
 
-			_json.putAll(json);
+        if (_json == null) {
 
-		}
+            _json = json;
 
-		return save(clientFile, _json.toJSONString());
+        } else {
 
-	}
+            _json.putAll(json);
 
-	/**
-	 * 保存服务器配置文件
-	 * 
-	 * @param json
-	 * @return
-	 */
-	public boolean saveServerConfig(JSONObject json) {
+        }
 
-		if (json == null) {
+        return save(clientFile, _json.toJSONString());
 
-			return false;
+    }
 
-		}
+    /**
+     * 保存服务器配置文件
+     *
+     * @param json
+     * @return
+     */
+    public boolean saveServerConfig(JSONObject json) {
 
-		JSONObject _json = getServerConfig();
+        if (json == null) {
 
-		if (_json == null) {
+            return false;
 
-			_json = json;
+        }
 
-		} else {
+        JSONObject _json = getServerConfig();
 
-			_json.putAll(json);
+        if (_json == null) {
 
-		}
+            _json = json;
 
-		return save(serverFile, _json.toJSONString());
+        } else {
 
-	}
+            _json.putAll(json);
+
+        }
+
+        return save(serverFile, _json.toJSONString());
+
+    }
 
 }

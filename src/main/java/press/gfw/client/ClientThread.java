@@ -1,22 +1,20 @@
 /**
-* 
-*    GFW.Press
-*    Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
-*
-*    This program is free software: you can redistribute it and/or modify
-*    it under the terms of the GNU General Public License as published by
-*    the Free Software Foundation, either version 3 of the License, or
-*    (at your option) any later version.
-*
-*    This program is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*    GNU General Public License for more details.
-*
-*    You should have received a copy of the GNU General Public License
-*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*    
-**/
+ * GFW.Press
+ * Copyright (C) 2016  chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ **/
 package press.gfw.client;
 
 import java.io.IOException;
@@ -33,124 +31,124 @@ import press.gfw.decrypt.EncryptForwardThread;
 import press.gfw.server.PointThread;
 
 /**
- * 
+ *
  * GFW.Press客户端线程
- * 
+ *
  * @author chinashiyu ( chinashiyu@gfw.press ; http://gfw.press )
  *
  */
 public class ClientThread extends PointThread {
-	
-	private static Logger logger = Logger.getLogger(ClientThread.class);
 
-	private String serverHost = null;
+    private static Logger logger = Logger.getLogger(ClientThread.class);
 
-	private int serverPort = 0;
+    private String serverHost = null;
 
-	private SecretKey key = null;
+    private int serverPort = 0;
 
-	private Socket agentSocket = null;
+    private SecretKey key = null;
 
-	private Socket serverSocket = null;
+    private Socket agentSocket = null;
 
-	private boolean forwarding = false;
+    private Socket serverSocket = null;
 
-	public ClientThread(Socket agentSocket, String serverHost, int serverPort, SecretKey key) {
+    private boolean forwarding = false;
 
-		this.agentSocket = agentSocket;
+    public ClientThread(Socket agentSocket, String serverHost, int serverPort, SecretKey key) {
 
-		this.serverHost = serverHost;
+        this.agentSocket = agentSocket;
 
-		this.serverPort = serverPort;
+        this.serverHost = serverHost;
 
-		this.key = key;
+        this.serverPort = serverPort;
 
-	}
+        this.key = key;
+
+    }
 
 
-	/**
-	 * 关闭所有连接，此线程及转发子线程调用
-	 */
-	public synchronized void over() {
+    /**
+     * 关闭所有连接，此线程及转发子线程调用
+     */
+    public synchronized void over() {
 
-		try {
+        try {
 
-			serverSocket.close();
+            serverSocket.close();
 
-		} catch (Exception e) {
+        } catch (Exception e) {
 
-		}
+        }
 
-		try {
+        try {
 
-			agentSocket.close();
+            agentSocket.close();
 
-		} catch (Exception e) {
+        } catch (Exception e) {
 
-		}
+        }
 
-		if (forwarding) {
+        if (forwarding) {
 
-			forwarding = false;
+            forwarding = false;
 
-		}
+        }
 
-	}
+    }
 
-	/**
-	 * 启动客户端与服务器之间的转发线程，并对数据进行加密及解密
-	 */
-	public void run() {
+    /**
+     * 启动客户端与服务器之间的转发线程，并对数据进行加密及解密
+     */
+    public void run() {
 
-		InputStream agentIn = null;
+        InputStream agentIn = null;
 
-		OutputStream agentOut = null;
+        OutputStream agentOut = null;
 
-		InputStream serverIn = null;
+        InputStream serverIn = null;
 
-		OutputStream serverOut = null;
+        OutputStream serverOut = null;
 
-		try {
+        try {
 
-			// 连接服务器
-			serverSocket = new Socket(serverHost, serverPort);
+            // 连接服务器
+            serverSocket = new Socket(serverHost, serverPort);
 
-			// 设置3分钟超时
-			serverSocket.setSoTimeout(180000);
-			agentSocket.setSoTimeout(180000);
+            // 设置3分钟超时
+            serverSocket.setSoTimeout(180000);
+            agentSocket.setSoTimeout(180000);
 
-			// 打开 keep-alive
-			serverSocket.setKeepAlive(true);
-			agentSocket.setKeepAlive(true);
+            // 打开 keep-alive
+            serverSocket.setKeepAlive(true);
+            agentSocket.setKeepAlive(true);
 
-			// 获取输入输出流
-			agentIn = agentSocket.getInputStream();
-			agentOut = agentSocket.getOutputStream();
+            // 获取输入输出流
+            agentIn = agentSocket.getInputStream();
+            agentOut = agentSocket.getOutputStream();
 
-			serverIn = serverSocket.getInputStream();
-			serverOut = serverSocket.getOutputStream();
+            serverIn = serverSocket.getInputStream();
+            serverOut = serverSocket.getOutputStream();
 
-		} catch (IOException ex) {
+        } catch (IOException ex) {
 
-			logger.error("连接服务器出错：" + serverHost + ":" + serverPort,ex);
+            logger.error("连接服务器出错：" + serverHost + ":" + serverPort, ex);
 
-			over();
+            over();
 
-			return;
+            return;
 
-		}
+        }
 
-		// 开始转发
-		forwarding = true;
-		
-		logger.debug("加密转发开始...");
-		EncryptForwardThread forwardServer = new EncryptForwardThread(this, agentIn, serverOut, key);
-		forwardServer.start();
+        // 开始转发
+        forwarding = true;
 
-		logger.debug("解密转发开始...");
-		DecryptForwardThread forwardAgent = new DecryptForwardThread(this, serverIn, agentOut, key);
-		forwardAgent.start();
+        logger.debug("加密转发开始...");
+        EncryptForwardThread forwardServer = new EncryptForwardThread(this, agentIn, serverOut, key);
+        forwardServer.start();
 
-	}
+        logger.debug("解密转发开始...");
+        DecryptForwardThread forwardAgent = new DecryptForwardThread(this, serverIn, agentOut, key);
+        forwardAgent.start();
+
+    }
 
 }

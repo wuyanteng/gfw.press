@@ -1,0 +1,23 @@
+<assembly>
+    <id>gfw.press</id>
+    <!-- 最终打包成一个用于发布的jar文件 -->
+    <formats>
+        <format>jar</format>
+    </formats>
+
+    <fileSets>
+
+        <fileSet>
+            <directory>${project.basedir}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>*.class</include>
+                <include>*.properties</include>
+                <include>*.sh*</include>
+                <include>*.txt</include>
+                <include>*.json</include>
+            </includes>
+        </fileSet>
+
+    </fileSets>
+</assembly>

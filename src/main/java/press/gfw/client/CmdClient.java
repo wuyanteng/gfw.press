@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONObject;
 import press.gfw.utils.Config;
 
 /**
- * 
  * Copyright © Mritd. All rights reserved.
  *
  * @ClassName: CmdClient
@@ -16,48 +15,47 @@ import press.gfw.utils.Config;
  * @date: 2016年5月28日 下午10:34:40
  */
 public class CmdClient {
-	
-	private static Logger logger = Logger.getLogger(CmdClient.class);
 
-	/**
-	 * 
-	 * @Title: main
-	 * @Description: TODO 主方法
-	 * @param args
-	 * @return: void
-	 */
-	public static void main(String[] args) {
-		
-		logger.info("命令行客户端启动...");
-		
-		// 服务器 IP
-		String serverHost = "";
-		// 服务器端口
-		String serverPort = "";
-		// 服务器密码
-		String password = "";
-		// 本地代理端口
-		String proxyPort ="";
-		
-		logger.info("加载配置文件...");
-		JSONObject json = new Config().getClientConfig();
+    private static Logger logger = Logger.getLogger(CmdClient.class);
 
-		if (json != null) {
+    /**
+     * @param args
+     * @Title: main
+     * @Description: TODO 主方法
+     * @return: void
+     */
+    public static void main(String[] args) {
 
-			serverHost = json.get("ServerHost") == null ? "" : (String) json.get("ServerHost");
+        logger.info("命令行客户端启动...");
 
-			serverPort = json.get("ServerPort") == null ? "" : (String) json.get("ServerPort");
+        // 服务器 IP
+        String serverHost = "";
+        // 服务器端口
+        String serverPort = "";
+        // 服务器密码
+        String password = "";
+        // 本地代理端口
+        String proxyPort = "";
 
-			password = json.get("Password") == null ? "" : (String) json.get("Password");
+        logger.info("加载配置文件...");
+        JSONObject json = new Config().getClientConfig();
 
-			proxyPort = json.get("ProxyPort") == null ? "" : (String) json.get("ProxyPort");
+        if (json != null) {
 
-		}
-		
-		logger.info("创建监听线程...");
-		Client client = new Client(serverHost, serverPort, password, proxyPort);
+            serverHost = json.get("ServerHost") == null ? "" : (String) json.get("ServerHost");
 
-		logger.info("启动代理服务...");
-		client.start();
-	}
+            serverPort = json.get("ServerPort") == null ? "" : (String) json.get("ServerPort");
+
+            password = json.get("Password") == null ? "" : (String) json.get("Password");
+
+            proxyPort = json.get("ProxyPort") == null ? "" : (String) json.get("ProxyPort");
+
+        }
+
+        logger.info("创建监听线程...");
+        Client client = new Client(serverHost, serverPort, password, proxyPort);
+
+        logger.info("启动代理服务...");
+        client.start();
+    }
 }
